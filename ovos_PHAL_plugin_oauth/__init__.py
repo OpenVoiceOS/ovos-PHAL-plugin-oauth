@@ -31,11 +31,34 @@ class OAuthPlugin(PHALPlugin):
         self.bus.on("oauth.register", self.handle_oauth_register)
         self.bus.on("oauth.start", self.handle_start_oauth)
         self.bus.on("oauth.get", self.handle_get_auth_url)
+        self.bus.on("ovos.shell.oauth.register.credentials", self.handle_client_secret)
 
         # trigger register events from oauth skills
         self.bus.emit(Message("oauth.ping"))
 
         self.oauth_skills = {}
+
+    def handle_client_secret(self, message):
+        skill_id = message.data.get("skill_id")
+        app_id = message.data.get("app_id")
+        munged_id = f"{skill_id}_{app_id}"  # key for oauth db
+
+        client_id = message.data.get("client_id")
+        client_secret = message.data.get("client_secret")
+
+        # update db
+        with OAuthApplicationDatabase() as db:
+            db[munged_id]["client_id"] = client_id
+            db[munged_id]["client_secret"] = client_secret
+            db.store()
+
+        # trigger oauth flow
+        url = self.get_oauth_url(skill_id, app_id)
+        self.bus.emit(message.forward(
+            "ovos.shell.oauth.start.authentication",
+            {"url": url, "skill_id": skill_id, "app_id": app_id,
+             "needs_credentials": self.oauth_skills[skill_id]["needs_creds"]})
+        )
 
     def handle_oauth_register(self, message):
         skill_id = message.data.get("skill_id")
@@ -101,7 +124,8 @@ class OAuthPlugin(PHALPlugin):
         url = self.get_oauth_url(skill_id, app_id)
         self.bus.emit(message.forward(
             "ovos.shell.oauth.start.authentication",
-            {"url": url, "needs_credentials": self.oauth_skills[skill_id]["needs_creds"]})
+            {"url": url, "skill_id": skill_id, "app_id": app_id,
+             "needs_credentials": self.oauth_skills[skill_id]["needs_creds"]})
         )
 
     @app.route("/auth/callback/<munged_id>", methods=['GET'])

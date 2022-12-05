@@ -12,6 +12,9 @@ self.bus.on("oauth.register", self.handle_oauth_register)
 # this triggers the ovos shell oauth flow
 self.bus.on("oauth.start", self.handle_start_oauth)
 
+# when ovos shell sends client_id/secret add it to db and continue oauth flow
+self.bus.on("ovos.shell.oauth.register.credentials", self.handle_client_secret)
+
 # this returns the oauth url for any external UI that wants to use it
 self.bus.on("oauth.get", self.handle_get_auth_url)
 ```
@@ -21,7 +24,7 @@ Emits
 # on plugin load trigger register events from oauth skills that were loaded already
 self.bus.emit(Message("oauth.ping"))
 
-# on oauth.get send oauth.get.response
+# on oauth.get send oauth.url
 self.bus.emit(message.reply("oauth.url", {"url": url}))
 
 # on oauth.start flow trigger ovos shell UI
