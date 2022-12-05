@@ -29,6 +29,7 @@ class OAuthPlugin(PHALPlugin):
         self.port = config.get("port", 36536)
 
         self.bus.on("oauth.register", self.handle_oauth_register)
+        self.bus.on("oauth.start", self.handle_start_oauth)
         self.bus.on("oauth.get", self.handle_get_auth_url)
 
         # trigger register events from oauth skills
@@ -67,21 +68,30 @@ class OAuthPlugin(PHALPlugin):
             self.oauth_skills[skill_id] = []
         self.oauth_skills[skill_id].append(app_id)
 
-    def handle_get_auth_url(self, message):
-        skill_id = message.data.get("skill_id")
-        app_id = message.data.get("app_id")
+    def get_oauth_url(self, skill_id, app_id):
         munged_id = f"{skill_id}_{app_id}"  # key for oauth db
 
         callback_endpoint = f"http://0.0.0.0:{self.port}/auth/callback/{munged_id}"
 
         data = OAuthApplicationDatabase()[munged_id]
         client = WebApplicationClient(data["client_id"])
-        request_uri = client.prepare_request_uri(data["auth_endpoint"],
-                                                 redirect_uri=data.get("callback_endpoint") or callback_endpoint,
-                                                 show_dialog=True,
-                                                 state=data.get('oauth_service') or munged_id,
-                                                 scope=data["scope"])
-        self.bus.emit(message.response(data={"url": request_uri}))
+        return client.prepare_request_uri(data["auth_endpoint"],
+                                          redirect_uri=data.get("callback_endpoint") or callback_endpoint,
+                                          show_dialog=True,
+                                          state=data.get('oauth_service') or munged_id,
+                                          scope=data["scope"])
+
+    def handle_get_auth_url(self, message):
+        skill_id = message.data.get("skill_id")
+        app_id = message.data.get("app_id")
+        url = self.get_oauth_url(skill_id, app_id)
+        self.bus.emit(message.reply("oauth.url", {"url": url}))
+
+    def handle_start_oauth(self, message):
+        skill_id = message.data.get("skill_id")
+        app_id = message.data.get("app_id")
+        url = self.get_oauth_url(skill_id, app_id)
+        self.bus.emit(message.forward("ovos.shell.oauth.start.authentication", {"url": url}))
 
     @app.route("/auth/callback/<munged_id>", methods=['GET'])
     def oauth_callback(self, munged_id):
@@ -120,4 +130,5 @@ class OAuthPlugin(PHALPlugin):
     def shutdown(self):
         self.bus.remove("oauth.register", self.handle_oauth_register)
         self.bus.remove("oauth.get", self.handle_get_auth_url)
+        self.bus.remove("oauth.start", self.handle_start_oauth)
         super().shutdown()
