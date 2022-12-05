@@ -54,16 +54,15 @@ class OAuthPlugin(PHALPlugin):
         client_secret = message.data.get("client_secret")
 
         with OAuthApplicationDatabase() as db:
-            db[munged_id] = {
-                "auth_endpoint": auth_endpoint,
-                "token_endpoint": token_endpoint,
-                "refresh_endpoint": refresh_endpoint,
-                "callback_endpoint": cb_endpoint,
-                "oauth_service": munged_id,
-                "client_id": client_id,
-                "client_secret": client_secret,
-                "scope": scope
-            }
+            db.add_application(oauth_service=munged_id,
+                               client_id=client_id,
+                               client_secret=client_secret,
+                               auth_endpoint=auth_endpoint,
+                               token_endpoint=token_endpoint,
+                               refresh_endpoint=refresh_endpoint,
+                               callback_endpoint=cb_endpoint,
+                               scope=scope)
+
         if skill_id not in self.oauth_skills:
             self.oauth_skills[skill_id] = []
         self.oauth_skills[skill_id].append(app_id)
