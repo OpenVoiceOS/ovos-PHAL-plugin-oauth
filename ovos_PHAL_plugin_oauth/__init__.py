@@ -94,7 +94,7 @@ class OAuthPlugin(PHALPlugin):
 
         return params
 
-    def start_callback_server(self):
+    def run(self):
         app.run(port=self.port, debug=False)
 
     def shutdown(self):
