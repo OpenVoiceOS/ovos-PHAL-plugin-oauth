@@ -42,6 +42,10 @@ class OAuthPlugin(PHALPlugin):
         app_id = message.data.get("app_id")
         munged_id = f"{skill_id}_{app_id}"  # key for oauth db
 
+        if skill_id not in self.oauth_skills:
+            self.oauth_skills[skill_id] = {"app_ids": []}
+        self.oauth_skills[skill_id]["app_ids"].append(app_id)
+
         # these fields are app specific and provided by skills
         auth_endpoint = message.data.get("auth_endpoint")
         token_endpoint = message.data.get("token_endpoint")
@@ -64,9 +68,13 @@ class OAuthPlugin(PHALPlugin):
                                callback_endpoint=cb_endpoint,
                                scope=scope)
 
-        if skill_id not in self.oauth_skills:
-            self.oauth_skills[skill_id] = []
-        self.oauth_skills[skill_id].append(app_id)
+        if client_id and client_secret:
+            # skill bundled app credentials
+            self.oauth_skills[skill_id]["needs_creds"] = False
+        else:
+            # extra GUI setup page needed to enter client_id and client_secret
+            # eg. spotify
+            self.oauth_skills[skill_id]["needs_creds"] = True
 
     def get_oauth_url(self, skill_id, app_id):
         munged_id = f"{skill_id}_{app_id}"  # key for oauth db
@@ -91,7 +99,10 @@ class OAuthPlugin(PHALPlugin):
         skill_id = message.data.get("skill_id")
         app_id = message.data.get("app_id")
         url = self.get_oauth_url(skill_id, app_id)
-        self.bus.emit(message.forward("ovos.shell.oauth.start.authentication", {"url": url}))
+        self.bus.emit(message.forward(
+            "ovos.shell.oauth.start.authentication",
+            {"url": url, "needs_credentials": self.oauth_skills[skill_id]["needs_creds"]})
+        )
 
     @app.route("/auth/callback/<munged_id>", methods=['GET'])
     def oauth_callback(self, munged_id):
