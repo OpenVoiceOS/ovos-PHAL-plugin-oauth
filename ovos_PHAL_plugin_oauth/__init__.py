@@ -39,7 +39,7 @@ class OAuthPlugin(PHALPlugin):
     def handle_oauth_register(self, message):
         skill_id = message.data.get("skill_id")
         app_id = message.data.get("app_id")
-        munged_id = f"{skill_id}:{app_id}"  # key for oauth db
+        munged_id = f"{skill_id}_{app_id}"  # key for oauth db
 
         # these fields are app specific and provided by skills
         auth_endpoint = message.data.get("auth_endpoint")
@@ -71,7 +71,7 @@ class OAuthPlugin(PHALPlugin):
     def handle_get_auth_url(self, message):
         skill_id = message.data.get("skill_id")
         app_id = message.data.get("app_id")
-        munged_id = f"{skill_id}:{app_id}"  # key for oauth db
+        munged_id = f"{skill_id}_{app_id}"  # key for oauth db
 
         callback_endpoint = f"http://0.0.0.0:{self.port}/auth/callback/{munged_id}"
 
