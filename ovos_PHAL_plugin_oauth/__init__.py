@@ -252,9 +252,7 @@ class OAuthPlugin(PHALPlugin):
 
     def run(self):
         self.plugin_started_event = threading.Event()
-        while not self.plugin_started_event.is_set():
-            self.plugin_started_event.wait(1)
-
+        self.plugin_started_event.wait(1)
         # Needs to be the LAN IP address where remote devices can reach the app
         self.local_flask_host = get_ip()
         app.bus = self.bus
