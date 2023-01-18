@@ -1,5 +1,8 @@
 import os
+import tempfile
+import threading
 import uuid
+
 import qrcode
 import requests
 from flask import Flask, request
@@ -48,10 +51,8 @@ class OAuthPlugin(PHALPlugin):
 
         self.oauth_skills = {}
 
-        # Run the flask server once all has actually initialized
-        # This is to prevent the flask server from starting before the plugin has been fully initialized
-        # otherwise self.port may not be set yet and the flask server will start on the default port
-        self.run_flask_app()
+        # Set the event when the plugin is started
+        self.plugin_started_event.set()
 
     def handle_client_secret(self, message):
         skill_id = message.data.get("skill_id")
@@ -187,8 +188,7 @@ class OAuthPlugin(PHALPlugin):
 
         # Allow any registered app / skill to handle the token response urgently, if needed
         # For example temporary tokens to generate a long lived token for the skill/plugin
-        bus = app._plugin_bus
-        bus.emit(
+        app.bus.emit(
             Message(f"oauth.token.response.{munged_id}", data=token_response))
 
         return params
@@ -232,13 +232,14 @@ class OAuthPlugin(PHALPlugin):
         qr.make(fit=True)
         img = qr.make_image(fill_color="black", back_color="white")
         img_id = str(uuid.uuid4().hex)[:4]
-        img.save(f"/tmp/{skill_id}_{app_id}_oauth_qr_{img_id}.png")
-        return f"/tmp/{skill_id}_{app_id}_oauth_qr_{img_id}.png"
+        temp_dir = tempfile.gettempdir()
+        img.save(f"{temp_dir}/{skill_id}_{app_id}_oauth_qr_{img_id}.png")
+        return f"{temp_dir}/{skill_id}_{app_id}_oauth_qr_{img_id}.png"
 
     def build_plugin_service_url(self, oauth_url, skill_id, app_id, client_id=None, client_secret=None):
         redirect_uri = f"http://{self.local_flask_host}:{self.port}/auth/callback/{skill_id}_{app_id}"
         oauth_complete_url = f"{oauth_url}?redirect_uri={redirect_uri}"
-        
+
         if client_secret:
             # Some services require client_id and client_secret
             oauth_complete_url = f"{oauth_url}?client_id={client_id}&client_secret={client_secret}&redirect_uri={redirect_uri}"
@@ -249,9 +250,14 @@ class OAuthPlugin(PHALPlugin):
 
         return oauth_complete_url
 
-    def run_flask_app(self):
-        self.local_flask_host = get_ip() # Needs to be the LAN IP address where remote devices can reach the app
-        app._plugin_bus = self.bus
+    def run(self):
+        self.plugin_started_event = threading.Event()
+        while not self.plugin_started_event.is_set():
+            self.plugin_started_event.wait(1)
+
+        # Needs to be the LAN IP address where remote devices can reach the app
+        self.local_flask_host = get_ip()
+        app.bus = self.bus
         app.run(host="0.0.0.0", port=self.port, debug=False)
 
     def shutdown(self):
