@@ -79,9 +79,14 @@ class OAuthPlugin(PHALPlugin):
     validator = OAuthPluginValidator
 
     def __init__(self, bus=None, config=None):
-        super().__init__(bus=bus, name="ovos-PHAL-plugin-oauth", config=config)
         self.config = config
         self.port = self.config.get("port", 36536)
+        self.local_flask_host = None
+        self.oauth_skills = {}
+        
+        super().__init__(bus=bus, name="ovos-PHAL-plugin-oauth", config=config)
+        
+        # self.bus can only be used after call to super()
         self.bus.on("oauth.register", self.handle_oauth_register)
         self.bus.on("oauth.start", self.handle_start_oauth)
         self.bus.on("oauth.get", self.handle_get_auth_url)
@@ -94,12 +99,7 @@ class OAuthPlugin(PHALPlugin):
 
         # trigger register events from oauth skills
         self.bus.emit(Message("oauth.ping"))
-        self.local_flask_host = None
 
-        self.oauth_skills = {}
-
-        # Set the event when the plugin is started
-        self.plugin_started_event.set()
 
     def handle_client_secret(self, message):
         skill_id = message.data.get("skill_id")
@@ -251,8 +251,6 @@ class OAuthPlugin(PHALPlugin):
         return oauth_complete_url
 
     def run(self):
-        self.plugin_started_event = threading.Event()
-        self.plugin_started_event.wait(1)
         # Needs to be the LAN IP address where remote devices can reach the app
         self.local_flask_host = get_ip()
         app.bus = self.bus
