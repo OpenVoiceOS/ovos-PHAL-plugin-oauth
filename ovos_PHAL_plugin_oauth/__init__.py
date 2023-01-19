@@ -18,6 +18,53 @@ os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 app = Flask(__name__)
 
+@app.route("/auth/callback/<munged_id>", methods=['GET'])
+def oauth_callback(munged_id):
+    """ user completed oauth, save token to db """
+    params = dict(request.args)
+    code = params["code"]
+
+    data = OAuthApplicationDatabase()[munged_id]
+    client_id = data["client_id"]
+    client_secret = data["client_secret"]
+    token_endpoint = data["token_endpoint"]
+    munged_id = data["oauth_service"]
+
+    # Prepare and send a request to get tokens! Yay tokens!
+    client = WebApplicationClient(client_id)
+    token_url, headers, body = client.prepare_token_request(
+        token_endpoint,
+        authorization_response=request.url,
+        redirect_url=request.base_url,
+        code=code
+    )
+    if client_secret:
+        # Uses client_secret for authentication
+        token_response = requests.post(
+            token_url,
+            headers=headers,
+            data=body,
+            auth=(client_id, client_secret),
+        ).json()
+
+    else:
+        # Uses basic auth for authentication
+        token_response = requests.post(
+            token_url,
+            headers=headers,
+            data=body,
+        ).json()
+
+    with OAuthTokenDatabase() as db:
+        db.add_token(munged_id, token_response)
+
+    # Allow any registered app / skill to handle the token response urgently, if needed
+    # For example temporary tokens to generate a long lived token for the skill/plugin
+    app.bus.emit(
+        Message(f"oauth.token.response.{munged_id}", data=token_response))
+
+    return params
+
 
 class OAuthPluginValidator:
     @staticmethod
@@ -145,53 +192,6 @@ class OAuthPlugin(PHALPlugin):
             {"url": url, "skill_id": skill_id, "app_id": app_id,
              "needs_credentials": self.oauth_skills[skill_id]["needs_creds"]})
         )
-
-    @app.route("/auth/callback/<munged_id>", methods=['GET'])
-    def oauth_callback(munged_id):
-        """ user completed oauth, save token to db """
-        params = dict(request.args)
-        code = params["code"]
-
-        data = OAuthApplicationDatabase()[munged_id]
-        client_id = data["client_id"]
-        client_secret = data["client_secret"]
-        token_endpoint = data["token_endpoint"]
-        munged_id = data["oauth_service"]
-
-        # Prepare and send a request to get tokens! Yay tokens!
-        client = WebApplicationClient(client_id)
-        token_url, headers, body = client.prepare_token_request(
-            token_endpoint,
-            authorization_response=request.url,
-            redirect_url=request.base_url,
-            code=code
-        )
-        if client_secret:
-            # Uses client_secret for authentication
-            token_response = requests.post(
-                token_url,
-                headers=headers,
-                data=body,
-                auth=(client_id, client_secret),
-            ).json()
-
-        else:
-            # Uses basic auth for authentication
-            token_response = requests.post(
-                token_url,
-                headers=headers,
-                data=body,
-            ).json()
-
-        with OAuthTokenDatabase() as db:
-            db.add_token(munged_id, token_response)
-
-        # Allow any registered app / skill to handle the token response urgently, if needed
-        # For example temporary tokens to generate a long lived token for the skill/plugin
-        app.bus.emit(
-            Message(f"oauth.token.response.{munged_id}", data=token_response))
-
-        return params
 
     def handle_get_app_host_info(self, message):
         self.bus.emit(message.reply("oauth.app.host.info.response", {
