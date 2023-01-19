@@ -55,3 +55,62 @@ scope = message.data.get("scope")
 client_id = message.data.get("client_id")
 client_secret = message.data.get("client_secret")
 ```
+
+---------------------------------------
+## QR Code - Remote OAuth Integration Flow
+
+* Note: This flow requires the a GUI to display the QR Code that can be scanned by the user using any external device. This also requires the port for the oauth app to be unblocked on the ufw.
+
+### **Example Usage From A Skill / Plugin**
+
+``` python
+self.skill_id = "my_skill_id"
+self.app_id = "my_app_id"
+self.client_id = None
+self.munged_id = f"{self.skill_id}_{self.app_id}"
+self.bus.on("oauth.app.host.info.response", self.handle_host_response)
+self.bus.on("oauth.generate.qr.response", self.handle_qr_generated)
+self.bus.on("oauth.token.response.{self.munged_id}", self.handle_token_response)
+
+def handle_host_response(self, message):
+    # Some apps with OAuth Spec 2.0 require client_id to match the redirect_uri address and port, set the client id before registering the skill, send a request to "oauth.get.app.host.info" to get the host and port
+    host = message.data.get("host", None)
+    port = message.data.get("port", None)
+    self.client_id = f"http://{host}:{port}"
+
+def register_skill(self):
+    client_secret = "my_client_secret"
+    auth_endpoint = "https://example.com/auth"
+    token_endpoint = "https://example.com/auth/token"
+    self.bus.emit(Message("oauth.register", {
+        "skill_id": self.skill_id, #Required
+        "app_id": self.app_id, #Required
+        "client_id": self.client_id, #Optional - Some apps may require this
+        "client_secret": client_secret, #Optional - Some apps may require this
+        "auth_endpoint": auth_endpoint, #Required
+        "token_endpoint": token_endpoint, #Required
+        "refresh_endpoint": "", #Optional - Some apps may require this
+        "scope": "" #Optional - Some apps may require this
+    }))
+
+def start_qr_generation(self):
+    self.bus.emit(Message("oauth.generate.qr.request", {
+        "app_id": self.app_id, # Required
+        "skill_id": self.skill_id # Required
+    }))
+
+def handle_qr_generated(self, message):
+    qr = message.data.get("qr", None)
+    # Use GUI to display the generated QR Code
+    # somewhere in your QML UI
+    self.gui["qr_image_path"] = qr
+
+def handle_token_response(self, message):
+    response = message.data
+    access_token = response.get("access_token", None)
+    # Do something with access_token once oauth flow is complete
+
+# Always register the skill first before requesting the QR Code to be generated
+self.register_skill()
+self.start_qr_flow()
+```

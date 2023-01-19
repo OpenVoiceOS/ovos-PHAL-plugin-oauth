@@ -1,15 +1,68 @@
 import os
+import tempfile
+import uuid
 
+import qrcode
 import requests
 from flask import Flask, request
 from mycroft_bus_client import Message
 from oauthlib.oauth2 import WebApplicationClient
-from ovos_backend_client.database import OAuthApplicationDatabase, OAuthTokenDatabase
+from ovos_backend_client.database import (OAuthApplicationDatabase,
+                                          OAuthTokenDatabase)
 from ovos_plugin_manager.phal import PHALPlugin
+from ovos_utils.log import LOG
+from ovos_utils.network_utils import get_ip
 
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 app = Flask(__name__)
+
+@app.route("/auth/callback/<munged_id>", methods=['GET'])
+def oauth_callback(munged_id):
+    """ user completed oauth, save token to db """
+    params = dict(request.args)
+    code = params["code"]
+
+    data = OAuthApplicationDatabase()[munged_id]
+    client_id = data["client_id"]
+    client_secret = data["client_secret"]
+    token_endpoint = data["token_endpoint"]
+    munged_id = data["oauth_service"]
+
+    # Prepare and send a request to get tokens! Yay tokens!
+    client = WebApplicationClient(client_id)
+    token_url, headers, body = client.prepare_token_request(
+        token_endpoint,
+        authorization_response=request.url,
+        redirect_url=request.base_url,
+        code=code
+    )
+    if client_secret:
+        # Uses client_secret for authentication
+        token_response = requests.post(
+            token_url,
+            headers=headers,
+            data=body,
+            auth=(client_id, client_secret),
+        ).json()
+
+    else:
+        # Uses basic auth for authentication
+        token_response = requests.post(
+            token_url,
+            headers=headers,
+            data=body,
+        ).json()
+
+    with OAuthTokenDatabase() as db:
+        db.add_token(munged_id, token_response)
+
+    # Allow any registered app / skill to handle the token response urgently, if needed
+    # For example temporary tokens to generate a long lived token for the skill/plugin
+    app.bus.emit(
+        Message(f"oauth.token.response.{munged_id}", data=token_response))
+
+    return params
 
 
 class OAuthPluginValidator:
@@ -25,18 +78,27 @@ class OAuthPlugin(PHALPlugin):
     validator = OAuthPluginValidator
 
     def __init__(self, bus=None, config=None):
+        self.config = config
+        self.port = self.config.get("port", 36536)
+        self.local_flask_host = None
+        self.oauth_skills = {}
+        
         super().__init__(bus=bus, name="ovos-PHAL-plugin-oauth", config=config)
-        self.port = config.get("port", 36536)
-
+        
+        # self.bus can only be used after call to super()
         self.bus.on("oauth.register", self.handle_oauth_register)
         self.bus.on("oauth.start", self.handle_start_oauth)
         self.bus.on("oauth.get", self.handle_get_auth_url)
-        self.bus.on("ovos.shell.oauth.register.credentials", self.handle_client_secret)
+        self.bus.on("ovos.shell.oauth.register.credentials",
+                    self.handle_client_secret)
+
+        # QR Code Remote OAuth Process Support
+        self.bus.on("oauth.get.app.host.info", self.handle_get_app_host_info)
+        self.bus.on("oauth.generate.qr.request", self.handle_generate_qr)
 
         # trigger register events from oauth skills
         self.bus.emit(Message("oauth.ping"))
 
-        self.oauth_skills = {}
 
     def handle_client_secret(self, message):
         skill_id = message.data.get("skill_id")
@@ -107,9 +169,11 @@ class OAuthPlugin(PHALPlugin):
         data = OAuthApplicationDatabase()[munged_id]
         client = WebApplicationClient(data["client_id"])
         return client.prepare_request_uri(data["auth_endpoint"],
-                                          redirect_uri=data.get("callback_endpoint") or callback_endpoint,
+                                          redirect_uri=data.get(
+                                              "callback_endpoint") or callback_endpoint,
                                           show_dialog=True,
-                                          state=data.get('oauth_service') or munged_id,
+                                          state=data.get(
+                                              'oauth_service') or munged_id,
                                           scope=data["scope"])
 
     def handle_get_auth_url(self, message):
@@ -128,42 +192,74 @@ class OAuthPlugin(PHALPlugin):
              "needs_credentials": self.oauth_skills[skill_id]["needs_creds"]})
         )
 
-    @app.route("/auth/callback/<munged_id>", methods=['GET'])
-    def oauth_callback(self, munged_id):
-        """ user completed oauth, save token to db """
-        params = dict(request.args)
-        code = params["code"]
+    def handle_get_app_host_info(self, message):
+        self.bus.emit(message.reply("oauth.app.host.info.response", {
+            "host": get_ip(),
+            "port": self.port
+        }))
 
+    #### QR Code Generation and Service Support ####
+    def handle_generate_qr(self, message):
+        skill_id = message.data.get("skill_id")
+        app_id = message.data.get("app_id")
+        munged_id = f"{skill_id}_{app_id}"  # key for oauth db
         data = OAuthApplicationDatabase()[munged_id]
-        client_id = data["client_id"]
-        client_secret = data["client_secret"]
-        token_endpoint = data["token_endpoint"]
+        oauth_url = data.get("auth_endpoint")
+        client_id = data.get("client_id", None)
+        client_secret = data.get("client_secret", None)
 
-        # Prepare and send a request to get tokens! Yay tokens!
-        client = WebApplicationClient(client_id)
-        token_url, headers, body = client.prepare_token_request(
-            token_endpoint,
-            authorization_response=request.url,
-            redirect_url=request.base_url,
-            code=code
+        if not oauth_url:
+            LOG.error(f"No auth endpoint found for oauth app {munged_id}")
+            return
+
+        plugin_service_url = self.build_plugin_service_url(
+            oauth_url, skill_id, app_id, client_id, client_secret)
+        self.bus.emit(message.reply("oauth.generate.qr.response", {
+            "skill_id": skill_id,
+            "app_id": app_id,
+            "qr": self.generate_qr(plugin_service_url, skill_id, app_id)
+        }))
+
+    def generate_qr(self, url, skill_id, app_id):
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
         )
-        token_response = requests.post(
-            token_url,
-            headers=headers,
-            data=body,
-            auth=(client_id, client_secret),
-        ).json()
+        qr.add_data(url)
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="black", back_color="white")
+        img_id = str(uuid.uuid4().hex)[:4]
+        temp_dir = tempfile.gettempdir()
+        img.save(f"{temp_dir}/{skill_id}_{app_id}_oauth_qr_{img_id}.png")
+        return f"{temp_dir}/{skill_id}_{app_id}_oauth_qr_{img_id}.png"
 
-        with OAuthTokenDatabase() as db:
-            db.add_token(munged_id, token_response)
+    def build_plugin_service_url(self, oauth_url, skill_id, app_id, client_id=None, client_secret=None):
+        redirect_uri = f"http://{self.local_flask_host}:{self.port}/auth/callback/{skill_id}_{app_id}"
+        oauth_complete_url = f"{oauth_url}?redirect_uri={redirect_uri}"
 
-        return params
+        if client_secret:
+            # Some services require client_id and client_secret
+            oauth_complete_url = f"{oauth_url}?client_id={client_id}&client_secret={client_secret}&redirect_uri={redirect_uri}"
+
+        if client_id:
+            # Some require only client_id
+            oauth_complete_url = f"{oauth_url}?client_id={client_id}&redirect_uri={redirect_uri}"
+
+        return oauth_complete_url
 
     def run(self):
-        app.run(port=self.port, debug=False)
+        # Needs to be the LAN IP address where remote devices can reach the app
+        self.local_flask_host = get_ip()
+        app.bus = self.bus
+        app.run(host="0.0.0.0", port=self.port, debug=False)
 
     def shutdown(self):
         self.bus.remove("oauth.register", self.handle_oauth_register)
         self.bus.remove("oauth.get", self.handle_get_auth_url)
         self.bus.remove("oauth.start", self.handle_start_oauth)
+        self.bus.remove("oauth.get.app.host.info",
+                        self.handle_get_app_host_info)
+        self.bus.remove("oauth.generate.qr.request", self.handle_generate_qr)
         super().shutdown()
