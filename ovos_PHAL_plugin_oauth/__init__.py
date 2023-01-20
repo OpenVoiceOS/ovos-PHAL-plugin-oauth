@@ -143,11 +143,11 @@ class OAuthPlugin(PHALPlugin):
         client_id = message.data.get("client_id")
         client_secret = message.data.get("client_secret")
 
-        # For QR code based authentication, some skills/plugins might not
-        # have any QML UI to display the code to scan
-        # Skills / apps can mark this as true at registeration
-        # if they need shell to display the QR code once generated
-        shell_display = message.data.get("shell_integration", False)
+        # For QR code based authentication, some skills/plugins might
+        # have their own UI and QML flow to display the code
+        # Skills / apps can mark this as false at registeration
+        # if they want to handle the display
+        shell_display = message.data.get("shell_integration", True)
 
         with OAuthApplicationDatabase() as db:
             db.add_application(oauth_service=munged_id,
