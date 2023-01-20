@@ -143,6 +143,12 @@ class OAuthPlugin(PHALPlugin):
         client_id = message.data.get("client_id")
         client_secret = message.data.get("client_secret")
 
+        # For QR code based authentication, some skills/plugins might not
+        # have any QML UI to display the code to scan
+        # Skills / apps can mark this as true at registeration
+        # if they need shell to display the QR code once generated
+        shell_display = message.data.get("shell_integration", False)
+
         with OAuthApplicationDatabase() as db:
             db.add_application(oauth_service=munged_id,
                                client_id=client_id,
@@ -151,7 +157,8 @@ class OAuthPlugin(PHALPlugin):
                                token_endpoint=token_endpoint,
                                refresh_endpoint=refresh_endpoint,
                                callback_endpoint=cb_endpoint,
-                               scope=scope)
+                               scope=scope,
+                               shell_integration=shell_display)
 
         if client_id and client_secret:
             # skill bundled app credentials
@@ -214,11 +221,21 @@ class OAuthPlugin(PHALPlugin):
 
         plugin_service_url = self.build_plugin_service_url(
             oauth_url, skill_id, app_id, client_id, client_secret)
+        qr_code = self.generate_qr(plugin_service_url, skill_id, app_id)
         self.bus.emit(message.reply("oauth.generate.qr.response", {
             "skill_id": skill_id,
             "app_id": app_id,
-            "qr": self.generate_qr(plugin_service_url, skill_id, app_id)
+            "qr": qr_code
         }))
+
+        # display the code in shell if registed app wants
+        display_code_on_shell = data.get("shell_integration")
+        if display_code_on_shell:
+            self.bus.emit(message("ovos.shell.oauth.display.qr.code", {
+                "skill_id": skill_id,
+                "app_id": app_id,
+                "qr": qr_code
+            }))
 
     def generate_qr(self, url, skill_id, app_id):
         qr = qrcode.QRCode(
