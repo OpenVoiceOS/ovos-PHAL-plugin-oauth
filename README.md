@@ -91,7 +91,7 @@ def register_skill(self):
         "token_endpoint": token_endpoint, #Required
         "refresh_endpoint": "", #Optional - Some apps may require this
         "scope": "", #Optional - Some apps may require this
-        "shell_integration": False #Optional - mark as false if app/skill handles displaying generated QR code. mark as true if shell should handle it.
+        "shell_integration": True #Optional - mark as false if app/skill handles displaying generated QR code. mark as true if shell should handle it.
     }))
 
 def start_qr_generation(self):
