@@ -229,7 +229,7 @@ class OAuthPlugin(PHALPlugin):
         }))
 
         # display the code in shell if registed app wants
-        display_code_on_shell = data.get("shell_integration")
+        display_code_on_shell = data.get("shell_integration", True)
         if display_code_on_shell:
             self.bus.emit(message("ovos.shell.oauth.display.qr.code", {
                 "skill_id": skill_id,
