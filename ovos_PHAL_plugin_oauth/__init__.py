@@ -253,6 +253,7 @@ class OAuthPlugin(PHALPlugin):
         return f"{temp_dir}/{skill_id}_{app_id}_oauth_qr_{img_id}.png"
 
     def build_plugin_service_url(self, oauth_url, skill_id, app_id, client_id=None, client_secret=None):
+        self.local_flask_host = get_ip() # Need to get local ip at runtime instead of boot
         redirect_uri = f"http://{self.local_flask_host}:{self.port}/auth/callback/{skill_id}_{app_id}"
         oauth_complete_url = f"{oauth_url}?redirect_uri={redirect_uri}"
 
