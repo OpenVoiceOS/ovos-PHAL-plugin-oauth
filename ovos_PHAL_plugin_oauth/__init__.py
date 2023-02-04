@@ -12,6 +12,8 @@ from ovos_backend_client.database import (OAuthApplicationDatabase,
 from ovos_plugin_manager.phal import PHALPlugin
 from ovos_utils.log import LOG
 from ovos_utils.network_utils import get_ip
+from ovos_utils import classproperty
+from ovos_utils.network_utils import NetworkRequirements
 
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
@@ -82,9 +84,9 @@ class OAuthPlugin(PHALPlugin):
         self.port = self.config.get("port", 36536)
         self.local_flask_host = None
         self.oauth_skills = {}
-        
+
         super().__init__(bus=bus, name="ovos-PHAL-plugin-oauth", config=config)
-        
+
         # self.bus can only be used after call to super()
         self.bus.on("oauth.register", self.handle_oauth_register)
         self.bus.on("oauth.start", self.handle_start_oauth)
@@ -99,6 +101,41 @@ class OAuthPlugin(PHALPlugin):
         # trigger register events from oauth skills
         self.bus.emit(Message("oauth.ping"))
 
+
+    @classproperty
+    def network_requirements(self):
+        """ developers should override this if they do not require connectivity
+         some examples:
+         IOT plugin that controls devices via LAN could return:
+            scans_on_init = True
+            NetworkRequirements(internet_before_load=False,
+                                 network_before_load=scans_on_init,
+                                 requires_internet=False,
+                                 requires_network=True,
+                                 no_internet_fallback=True,
+                                 no_network_fallback=False)
+         online search plugin with a local cache:
+            has_cache = False
+            NetworkRequirements(internet_before_load=not has_cache,
+                                 network_before_load=not has_cache,
+                                 requires_internet=True,
+                                 requires_network=True,
+                                 no_internet_fallback=True,
+                                 no_network_fallback=True)
+         a fully offline plugin:
+            NetworkRequirements(internet_before_load=False,
+                                 network_before_load=False,
+                                 requires_internet=False,
+                                 requires_network=False,
+                                 no_internet_fallback=True,
+                                 no_network_fallback=True)
+        """
+        return NetworkRequirements(internet_before_load=True,
+                                   network_before_load=True,
+                                   requires_internet=True,
+                                   requires_network=True,
+                                   no_internet_fallback=False,
+                                   no_network_fallback=False)
 
     def handle_client_secret(self, message):
         skill_id = message.data.get("skill_id")
