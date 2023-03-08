@@ -1,0 +1,11 @@
+README.md
+setup.py
+ovos_PHAL_plugin_oauth/__init__.py
+ovos_PHAL_plugin_oauth/version.py
+ovos_PHAL_plugin_oauth.egg-info/PKG-INFO
+ovos_PHAL_plugin_oauth.egg-info/SOURCES.txt
+ovos_PHAL_plugin_oauth.egg-info/dependency_links.txt
+ovos_PHAL_plugin_oauth.egg-info/entry_points.txt
+ovos_PHAL_plugin_oauth.egg-info/requires.txt
+ovos_PHAL_plugin_oauth.egg-info/top_level.txt
+ovos_PHAL_plugin_oauth.egg-info/zip-safe
