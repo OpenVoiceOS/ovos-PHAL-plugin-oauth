@@ -1,8 +1,8 @@
 # Changelog
 
-## [Unreleased](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/HEAD)
+## [V0.0.0a2](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/V0.0.0a2) (2023-02-02)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/909368bbdbe049811989c04a04ababd40deb2034...HEAD)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/909368bbdbe049811989c04a04ababd40deb2034...V0.0.0a2)
 
 **Merged pull requests:**
 
