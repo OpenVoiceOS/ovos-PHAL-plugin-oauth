@@ -13,11 +13,12 @@ from ovos_plugin_manager.phal import PHALPlugin
 from ovos_utils.log import LOG
 from ovos_utils.network_utils import get_ip
 from ovos_utils import classproperty
-from ovos_utils.network_utils import NetworkRequirements
+from ovos_utils.process_utils import RuntimeRequirements
 
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 app = Flask(__name__)
+
 
 @app.route("/auth/callback/<munged_id>", methods=['GET'])
 def oauth_callback(munged_id):
@@ -103,7 +104,7 @@ class OAuthPlugin(PHALPlugin):
 
 
     @classproperty
-    def network_requirements(self):
+    def runtime_requirements(self):
         """ developers should override this if they do not require connectivity
          some examples:
          IOT plugin that controls devices via LAN could return:
@@ -130,12 +131,15 @@ class OAuthPlugin(PHALPlugin):
                                  no_internet_fallback=True,
                                  no_network_fallback=True)
         """
-        return NetworkRequirements(internet_before_load=True,
+        return RuntimeRequirements(internet_before_load=True,
                                    network_before_load=True,
+                                   gui_before_load=False,
                                    requires_internet=True,
                                    requires_network=True,
+                                   requires_gui=True,
                                    no_internet_fallback=False,
-                                   no_network_fallback=False)
+                                   no_network_fallback=False,
+                                   no_gui_fallback=True)
 
     def handle_client_secret(self, message):
         skill_id = message.data.get("skill_id")
