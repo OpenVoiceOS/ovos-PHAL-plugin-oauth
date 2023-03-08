@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: ovos-PHAL-plugin-oauth
-Version: 0.0.0
+Version: 0.0.1
 Summary: A plugin for OpenVoiceOS hardware abstraction layer
 Home-page: https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth
 Author: JarbasAi
