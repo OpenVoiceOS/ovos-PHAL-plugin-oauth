@@ -5,7 +5,7 @@ import uuid
 import qrcode
 import requests
 from flask import Flask, request
-from mycroft_bus_client import Message
+from ovos_bus_client.message import Message
 from oauthlib.oauth2 import WebApplicationClient
 from ovos_backend_client.database import (OAuthApplicationDatabase,
                                           OAuthTokenDatabase)
