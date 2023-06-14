@@ -1,3 +1,0 @@
-[ovos.plugin.phal]
-ovos-PHAL-plugin-oauth=ovos_PHAL_plugin_oauth:OAuthPlugin
-
