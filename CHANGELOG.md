@@ -1,5 +1,17 @@
 # Changelog
 
+## [Unreleased](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/HEAD)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/V0.0.1...HEAD)
+
+**Merged pull requests:**
+
+- Update messagebus package dependency [\#8](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/8) ([NeonDaniel](https://github.com/NeonDaniel))
+
+## [V0.0.1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/V0.0.1) (2023-03-08)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/V0.0.0...V0.0.1)
+
 ## [V0.0.0](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/V0.0.0) (2023-02-02)
 
 [Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/V0.0.0a2...V0.0.0)
