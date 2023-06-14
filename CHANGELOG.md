@@ -2,7 +2,15 @@
 
 ## [Unreleased](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/HEAD)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/V0.0.1...HEAD)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/V0.0.2a1...HEAD)
+
+**Merged pull requests:**
+
+- Remove build files and add .gitignore [\#9](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/9) ([NeonDaniel](https://github.com/NeonDaniel))
+
+## [V0.0.2a1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/V0.0.2a1) (2023-06-14)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/V0.0.1...V0.0.2a1)
 
 **Merged pull requests:**
 
