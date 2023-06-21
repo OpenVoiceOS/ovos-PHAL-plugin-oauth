@@ -1,8 +1,16 @@
 # Changelog
 
-## [Unreleased](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/HEAD)
+## [0.0.2a4](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/0.0.2a4) (2023-06-21)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/V0.0.2a2...HEAD)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/V0.0.2a3...0.0.2a4)
+
+**Merged pull requests:**
+
+- Update automation to shared actions [\#10](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/10) ([NeonDaniel](https://github.com/NeonDaniel))
+
+## [V0.0.2a3](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/V0.0.2a3) (2023-06-21)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/V0.0.2a2...V0.0.2a3)
 
 **Implemented enhancements:**
 
@@ -23,25 +31,6 @@
 **Merged pull requests:**
 
 - Update messagebus package dependency [\#8](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/8) ([NeonDaniel](https://github.com/NeonDaniel))
-
-## [V0.0.1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/V0.0.1) (2023-03-08)
-
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/V0.0.0...V0.0.1)
-
-## [V0.0.0](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/V0.0.0) (2023-02-02)
-
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/V0.0.0a2...V0.0.0)
-
-## [V0.0.0a2](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/V0.0.0a2) (2023-02-02)
-
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/909368bbdbe049811989c04a04ababd40deb2034...V0.0.0a2)
-
-**Merged pull requests:**
-
-- Update to stable dependencies [\#5](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/5) ([NeonDaniel](https://github.com/NeonDaniel))
-- fix get ip at runtime for redirect address and automation scripts [\#4](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/4) ([AIIX](https://github.com/AIIX))
-- allow shell to display qr code if apps don't do their own display [\#2](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/2) ([AIIX](https://github.com/AIIX))
-- Add support for QR Code based oauth process [\#1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/1) ([AIIX](https://github.com/AIIX))
 
 
 
