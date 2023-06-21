@@ -12,10 +12,13 @@ from ovos_backend_client.database import (OAuthApplicationDatabase,
 from ovos_plugin_manager.phal import PHALPlugin
 from ovos_utils.log import LOG
 from ovos_utils.network_utils import get_ip
+from ovos_utils import classproperty
+from ovos_utils.process_utils import RuntimeRequirements
 
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 app = Flask(__name__)
+
 
 @app.route("/auth/callback/<munged_id>", methods=['GET'])
 def oauth_callback(munged_id):
@@ -82,9 +85,9 @@ class OAuthPlugin(PHALPlugin):
         self.port = self.config.get("port", 36536)
         self.local_flask_host = None
         self.oauth_skills = {}
-        
+
         super().__init__(bus=bus, name="ovos-PHAL-plugin-oauth", config=config)
-        
+
         # self.bus can only be used after call to super()
         self.bus.on("oauth.register", self.handle_oauth_register)
         self.bus.on("oauth.start", self.handle_start_oauth)
@@ -99,6 +102,17 @@ class OAuthPlugin(PHALPlugin):
         # trigger register events from oauth skills
         self.bus.emit(Message("oauth.ping"))
 
+    @classproperty
+    def runtime_requirements(self):
+        return RuntimeRequirements(internet_before_load=True,
+                                   network_before_load=True,
+                                   gui_before_load=False,
+                                   requires_internet=True,
+                                   requires_network=True,
+                                   requires_gui=True,
+                                   no_internet_fallback=False,
+                                   no_network_fallback=False,
+                                   no_gui_fallback=True)
 
     def handle_client_secret(self, message):
         skill_id = message.data.get("skill_id")
