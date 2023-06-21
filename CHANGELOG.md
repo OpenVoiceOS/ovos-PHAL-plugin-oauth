@@ -2,7 +2,15 @@
 
 ## [Unreleased](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/HEAD)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/V0.0.2a1...HEAD)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/V0.0.2a2...HEAD)
+
+**Implemented enhancements:**
+
+- feat/network\_reqs [\#6](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/6) ([JarbasAl](https://github.com/JarbasAl))
+
+## [V0.0.2a2](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/V0.0.2a2) (2023-06-14)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/V0.0.2a1...V0.0.2a2)
 
 **Merged pull requests:**
 
