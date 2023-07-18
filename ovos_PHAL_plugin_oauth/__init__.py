@@ -1,5 +1,6 @@
 import os
 import tempfile
+import time
 import uuid
 
 import qrcode
@@ -58,6 +59,11 @@ def oauth_callback(munged_id):
         ).json()
 
     with OAuthTokenDatabase() as db:
+        # Make sure expires_at entry exists
+        if 'expires_at' not in token_response:
+            token_response['expires_at'] = (
+                    time.time() + token_response['expires_in']
+            )
         db.add_token(munged_id, token_response)
 
     # Allow any registered app / skill to handle the token response urgently, if needed
