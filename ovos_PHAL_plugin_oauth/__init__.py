@@ -98,6 +98,7 @@ class OAuthPlugin(PHALPlugin):
         self.bus.on("oauth.register", self.handle_oauth_register)
         self.bus.on("oauth.start", self.handle_start_oauth)
         self.bus.on("oauth.get", self.handle_get_auth_url)
+        self.bus.on("oauth.refresh", self.handle_oauth_refresh_token)
         self.bus.on("ovos.shell.oauth.register.credentials",
                     self.handle_client_secret)
 
@@ -153,7 +154,6 @@ class OAuthPlugin(PHALPlugin):
         # these fields are app specific and provided by skills
         auth_endpoint = message.data.get("auth_endpoint")
         token_endpoint = message.data.get("token_endpoint")
-        refresh_endpoint = message.data.get("refresh_endpoint")
         cb_endpoint = f"http://0.0.0.0:{self.port}/auth/callback/{munged_id}"
         scope = message.data.get("scope")
 
@@ -175,7 +175,7 @@ class OAuthPlugin(PHALPlugin):
                                    client_secret=client_secret,
                                    auth_endpoint=auth_endpoint,
                                    token_endpoint=token_endpoint,
-                                   refresh_endpoint=refresh_endpoint,
+                                   refresh_endpoint=None,
                                    callback_endpoint=cb_endpoint,
                                    scope=scope,
                                    shell_integration=shell_display)
@@ -202,6 +202,62 @@ class OAuthPlugin(PHALPlugin):
             response = message.response({"munged_id": munged_id,
                                          "client_id": client_id,
                                          "error": e})
+        self.bus.emit(response)
+
+    def handle_oauth_refresh_token(self, message):
+        """Refresh oauth token.
+
+        See:
+        https://www.oauth.com/oauth2-servers/making-authenticated-requests/refreshing-an-access-token/
+
+        for details on the procedure.
+        """
+        response_data = {}
+        oauth_id = f"{message.data['skill_id']}_{message.data['app_id']}"
+        # Load all needed data for refresh
+        with self.oauth_db as db:
+            app_data = db.get(oauth_id)
+        with OAuthTokenDatabase() as db:
+            token_data = db.get(oauth_id)
+
+        if (app_data is None or
+                token_data is None or 'refresh_token' not in token_data):
+            LOG.warning("Token data doesn't contain a refresh token and "
+                        "cannot be refreshed.")
+            response_data["result"] = "Error"
+        else:
+            refresh_token = token_data["refresh_token"]
+
+            # Fall back to token endpoint if no specific refresh endpoint
+            # has been set
+            token_endpoint = app_data["token_endpoint"]
+
+            client_id = app_data["client_id"]
+            client_secret = app_data["client_secret"]
+
+            # Perform refresh
+            client = WebApplicationClient(client_id, refresh_token=refresh_token)
+            uri, headers, body = client.prepare_refresh_token_request(token_endpoint)
+            refresh_result = requests.post(uri, headers=headers, data=body,
+                                           auth=(client_id, client_secret))
+
+            if refresh_result.ok:
+                new_token_data = refresh_result.json()
+                # Make sure 'expires_at' entry exists in token
+                if 'expires_at' not in new_token_data:
+                    new_token_data['expires_at'] = time.time() + token_data['expires_in']
+                # Store token
+                with OAuthTokenDatabase() as db:
+                    token_data.update(new_token_data)
+                    db.update_token(oauth_id, token_data)
+                response_data = {"result": "Ok",
+                                 "client_id": client_id,
+                                 "token": token_data}
+            else:
+                LOG.error("Token refresh failed :(")
+                response_data["result"] = "Error"
+
+        response = message.response(response_data)
         self.bus.emit(response)
 
     def get_oauth_url(self, skill_id, app_id):
