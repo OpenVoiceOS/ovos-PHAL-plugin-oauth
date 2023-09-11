@@ -1,36 +1,16 @@
 # Changelog
 
-## [0.0.2a4](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/0.0.2a4) (2023-06-21)
+## [0.0.3a1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/0.0.3a1) (2023-09-11)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/V0.0.2a3...0.0.2a4)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/0.0.2...0.0.3a1)
 
-**Merged pull requests:**
+**Closed issues:**
 
-- Update automation to shared actions [\#10](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/10) ([NeonDaniel](https://github.com/NeonDaniel))
-
-## [V0.0.2a3](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/V0.0.2a3) (2023-06-21)
-
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/V0.0.2a2...V0.0.2a3)
-
-**Implemented enhancements:**
-
-- feat/network\_reqs [\#6](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/6) ([JarbasAl](https://github.com/JarbasAl))
-
-## [V0.0.2a2](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/V0.0.2a2) (2023-06-14)
-
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/V0.0.2a1...V0.0.2a2)
+-  Incompatability with latest ovos-dinkum-listener [\#13](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/issues/13)
 
 **Merged pull requests:**
 
-- Remove build files and add .gitignore [\#9](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/9) ([NeonDaniel](https://github.com/NeonDaniel))
-
-## [V0.0.2a1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/V0.0.2a1) (2023-06-14)
-
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/V0.0.1...V0.0.2a1)
-
-**Merged pull requests:**
-
-- Update messagebus package dependency [\#8](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/8) ([NeonDaniel](https://github.com/NeonDaniel))
+- Relax ovos-backend-client dependency version [\#14](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/14) ([Ramblurr](https://github.com/Ramblurr))
 
 
 
