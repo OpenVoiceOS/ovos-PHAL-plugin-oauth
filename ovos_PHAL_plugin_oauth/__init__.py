@@ -123,10 +123,9 @@ class OAuthPlugin(PHALPlugin):
         client_secret = message.data.get("client_secret")
 
         # update db
-        with self.oauth_db as db:
-            db[munged_id]["client_id"] = client_id
-            db[munged_id]["client_secret"] = client_secret
-            # db.store()  This isn't necessary when using enter/exit
+        self.oauth_db[munged_id]["client_id"] = client_id
+        self.oauth_db[munged_id]["client_secret"] = client_secret
+        self.oauth_db.store()
 
         # trigger oauth flow
         url = self.get_oauth_url(skill_id, app_id)
@@ -164,16 +163,16 @@ class OAuthPlugin(PHALPlugin):
         shell_display = message.data.get("shell_integration", True)
 
         try:
-            with self.oauth_db as db:
-                db.add_application(oauth_service=munged_id,
-                                   client_id=client_id,
-                                   client_secret=client_secret,
-                                   auth_endpoint=auth_endpoint,
-                                   token_endpoint=token_endpoint,
-                                   refresh_endpoint=refresh_endpoint,
-                                   callback_endpoint=cb_endpoint,
-                                   scope=scope,
-                                   shell_integration=shell_display)
+            self.oauth_db.add_application(oauth_service=munged_id,
+                                          client_id=client_id,
+                                          client_secret=client_secret,
+                                          auth_endpoint=auth_endpoint,
+                                          token_endpoint=token_endpoint,
+                                          refresh_endpoint=refresh_endpoint,
+                                          callback_endpoint=cb_endpoint,
+                                          scope=scope,
+                                          shell_integration=shell_display)
+            self.oauth_db.store()
 
             if client_id and client_secret:
                 # skill bundled app credentials
@@ -187,6 +186,11 @@ class OAuthPlugin(PHALPlugin):
             response = message.response({"munged_id": munged_id,
                                          "client_id": client_id,
                                          "needs_creds": needs_creds})
+        except PermissionError as e:
+            LOG.error(f"Failed to write {self.oauth_db.path}")
+            response = message.response({"munged_id": munged_id,
+                                         "client_id": client_id,
+                                         "error": e})
         except Exception as e:
             LOG.exception(e)
             response = message.response({"munged_id": munged_id,
