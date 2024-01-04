@@ -123,9 +123,9 @@ class OAuthPlugin(PHALPlugin):
         client_secret = message.data.get("client_secret")
 
         # update db
-        self.oauth_db[munged_id]["client_id"] = client_id
-        self.oauth_db[munged_id]["client_secret"] = client_secret
-        self.oauth_db.store()
+        with self.oauth_db as db:
+            db[munged_id]["client_id"] = client_id
+            db[munged_id]["client_secret"] = client_secret
 
         # trigger oauth flow
         url = self.get_oauth_url(skill_id, app_id)
@@ -163,16 +163,16 @@ class OAuthPlugin(PHALPlugin):
         shell_display = message.data.get("shell_integration", True)
 
         try:
-            self.oauth_db.add_application(oauth_service=munged_id,
-                                          client_id=client_id,
-                                          client_secret=client_secret,
-                                          auth_endpoint=auth_endpoint,
-                                          token_endpoint=token_endpoint,
-                                          refresh_endpoint=refresh_endpoint,
-                                          callback_endpoint=cb_endpoint,
-                                          scope=scope,
-                                          shell_integration=shell_display)
-            self.oauth_db.store()
+            with self.oauth_db as db:
+                db.add_application(oauth_service=munged_id,
+                                   client_id=client_id,
+                                   client_secret=client_secret,
+                                   auth_endpoint=auth_endpoint,
+                                   token_endpoint=token_endpoint,
+                                   refresh_endpoint=refresh_endpoint,
+                                   callback_endpoint=cb_endpoint,
+                                   scope=scope,
+                                   shell_integration=shell_display)
 
             if client_id and client_secret:
                 # skill bundled app credentials
