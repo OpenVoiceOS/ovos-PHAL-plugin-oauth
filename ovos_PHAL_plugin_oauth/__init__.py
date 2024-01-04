@@ -26,7 +26,7 @@ def oauth_callback(munged_id):
     params = dict(request.args)
     code = params["code"]
 
-    data = OAuthApplicationDatabase()[munged_id]
+    data = OAuthPlugin.oauth_db[munged_id]
     client_id = data["client_id"]
     client_secret = data["client_secret"]
     token_endpoint = data["token_endpoint"]
@@ -61,7 +61,7 @@ def oauth_callback(munged_id):
         db.add_token(munged_id, token_response)
 
     # Allow any registered app / skill to handle the token response urgently, if needed
-    # For example temporary tokens to generate a long lived token for the skill/plugin
+    # For example temporary tokens to generate a long-lived token for the skill/plugin
     app.bus.emit(
         Message(f"oauth.token.response.{munged_id}", data=token_response))
 
@@ -79,13 +79,13 @@ class OAuthPluginValidator:
 
 class OAuthPlugin(PHALPlugin):
     validator = OAuthPluginValidator
+    oauth_db = OAuthApplicationDatabase()
 
     def __init__(self, bus=None, config=None):
         self.config = config
         self.port = self.config.get("port", 36536)
         self.local_flask_host = None
         self.oauth_skills = {}
-
         super().__init__(bus=bus, name="ovos-PHAL-plugin-oauth", config=config)
 
         # self.bus can only be used after call to super()
@@ -123,10 +123,9 @@ class OAuthPlugin(PHALPlugin):
         client_secret = message.data.get("client_secret")
 
         # update db
-        with OAuthApplicationDatabase() as db:
+        with self.oauth_db as db:
             db[munged_id]["client_id"] = client_id
             db[munged_id]["client_secret"] = client_secret
-            db.store()
 
         # trigger oauth flow
         url = self.get_oauth_url(skill_id, app_id)
@@ -163,31 +162,48 @@ class OAuthPlugin(PHALPlugin):
         # if they want to handle the display
         shell_display = message.data.get("shell_integration", True)
 
-        with OAuthApplicationDatabase() as db:
-            db.add_application(oauth_service=munged_id,
-                               client_id=client_id,
-                               client_secret=client_secret,
-                               auth_endpoint=auth_endpoint,
-                               token_endpoint=token_endpoint,
-                               refresh_endpoint=refresh_endpoint,
-                               callback_endpoint=cb_endpoint,
-                               scope=scope,
-                               shell_integration=shell_display)
+        try:
+            with self.oauth_db as db:
+                db.add_application(oauth_service=munged_id,
+                                   client_id=client_id,
+                                   client_secret=client_secret,
+                                   auth_endpoint=auth_endpoint,
+                                   token_endpoint=token_endpoint,
+                                   refresh_endpoint=refresh_endpoint,
+                                   callback_endpoint=cb_endpoint,
+                                   scope=scope,
+                                   shell_integration=shell_display)
 
-        if client_id and client_secret:
-            # skill bundled app credentials
-            self.oauth_skills[skill_id]["needs_creds"] = False
-        else:
-            # extra GUI setup page needed to enter client_id and client_secret
-            # eg. spotify
-            self.oauth_skills[skill_id]["needs_creds"] = True
+            if client_id and client_secret:
+                # skill bundled app credentials
+                needs_creds = False
+            else:
+                # extra GUI setup page needed to enter client_id and client_secret
+                # e.g. spotify
+                needs_creds = True
+
+            self.oauth_skills[skill_id]["needs_creds"] = needs_creds
+            response = message.response({"munged_id": munged_id,
+                                         "client_id": client_id,
+                                         "needs_creds": needs_creds})
+        except PermissionError as e:
+            LOG.error(f"Failed to write {self.oauth_db.path}")
+            response = message.response({"munged_id": munged_id,
+                                         "client_id": client_id,
+                                         "error": e})
+        except Exception as e:
+            LOG.exception(e)
+            response = message.response({"munged_id": munged_id,
+                                         "client_id": client_id,
+                                         "error": e})
+        self.bus.emit(response)
 
     def get_oauth_url(self, skill_id, app_id):
         munged_id = f"{skill_id}_{app_id}"  # key for oauth db
 
         callback_endpoint = f"http://0.0.0.0:{self.port}/auth/callback/{munged_id}"
 
-        data = OAuthApplicationDatabase()[munged_id]
+        data = self.oauth_db[munged_id]
         client = WebApplicationClient(data["client_id"])
         return client.prepare_request_uri(data["auth_endpoint"],
                                           redirect_uri=data.get(
@@ -224,13 +240,19 @@ class OAuthPlugin(PHALPlugin):
         skill_id = message.data.get("skill_id")
         app_id = message.data.get("app_id")
         munged_id = f"{skill_id}_{app_id}"  # key for oauth db
-        data = OAuthApplicationDatabase()[munged_id]
+        data = self.oauth_db[munged_id]
         oauth_url = data.get("auth_endpoint")
         client_id = data.get("client_id", None)
         client_secret = data.get("client_secret", None)
 
         if not oauth_url:
-            LOG.error(f"No auth endpoint found for oauth app {munged_id}")
+            error = f"No auth endpoint found for oauth app {munged_id}"
+            LOG.error(error)
+            self.bus.emit(message.reply("oauth.generate.qr.response", {
+                "skill_id": skill_id,
+                "app_id": app_id,
+                "error": error
+            }))
             return
 
         plugin_service_url = self.build_plugin_service_url(
@@ -245,6 +267,7 @@ class OAuthPlugin(PHALPlugin):
         # display the code in shell if registed app wants
         display_code_on_shell = data.get("shell_integration", True)
         if display_code_on_shell:
+            LOG.info(f"Displaying QR code for:{munged_id}")
             self.bus.emit(Message("ovos.shell.oauth.display.qr.code", {
                 "skill_id": skill_id,
                 "app_id": app_id,
@@ -267,7 +290,7 @@ class OAuthPlugin(PHALPlugin):
         return f"{temp_dir}/{skill_id}_{app_id}_oauth_qr_{img_id}.png"
 
     def build_plugin_service_url(self, oauth_url, skill_id, app_id, client_id=None, client_secret=None):
-        self.local_flask_host = get_ip() # Need to get local ip at runtime instead of boot
+        self.local_flask_host = get_ip()  # Need to get local ip at runtime instead of boot
         redirect_uri = f"http://{self.local_flask_host}:{self.port}/auth/callback/{skill_id}_{app_id}"
         oauth_complete_url = f"{oauth_url}?redirect_uri={redirect_uri}"
 
