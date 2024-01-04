@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.0.3a2](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/0.0.3a2) (2024-01-04)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/0.0.3a1...0.0.3a2)
+
+**Closed issues:**
+
+- Add PyPI Automation [\#3](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/issues/3)
+
+**Merged pull requests:**
+
+- Update logging, optimize, add more response messages [\#15](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/15) ([NeonDaniel](https://github.com/NeonDaniel))
+
 ## [0.0.3a1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/0.0.3a1) (2023-09-11)
 
 [Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/0.0.2...0.0.3a1)
