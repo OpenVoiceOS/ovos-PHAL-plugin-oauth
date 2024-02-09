@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.3a3](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/0.0.3a3) (2024-02-09)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/0.0.3a2...0.0.3a3)
+
+**Implemented enhancements:**
+
+- Refresh token [\#12](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/12) ([forslund](https://github.com/forslund))
+
 ## [0.0.3a2](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/0.0.3a2) (2024-01-04)
 
 [Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/0.0.3a1...0.0.3a2)
