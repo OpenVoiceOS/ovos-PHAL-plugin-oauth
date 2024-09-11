@@ -1,36 +1,52 @@
 # Changelog
 
-## [0.0.2a4](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/0.0.2a4) (2023-06-21)
+## [0.0.4a1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/0.0.4a1) (2024-09-11)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/V0.0.2a3...0.0.2a4)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/0.0.3a4...0.0.4a1)
 
 **Merged pull requests:**
 
-- Update automation to shared actions [\#10](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/10) ([NeonDaniel](https://github.com/NeonDaniel))
+- refactor!:deprecate\_refresh\_endpoint [\#21](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/21) ([JarbasAl](https://github.com/JarbasAl))
 
-## [V0.0.2a3](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/V0.0.2a3) (2023-06-21)
+## [0.0.3a4](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/0.0.3a4) (2024-09-11)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/V0.0.2a2...V0.0.2a3)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/0.0.3a3...0.0.3a4)
+
+**Merged pull requests:**
+
+- feat:semver\_automations [\#19](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/19) ([JarbasAl](https://github.com/JarbasAl))
+
+## [0.0.3a3](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/0.0.3a3) (2024-02-09)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/0.0.3a2...0.0.3a3)
 
 **Implemented enhancements:**
 
-- feat/network\_reqs [\#6](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/6) ([JarbasAl](https://github.com/JarbasAl))
+- Refresh token [\#12](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/12) ([forslund](https://github.com/forslund))
 
-## [V0.0.2a2](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/V0.0.2a2) (2023-06-14)
+## [0.0.3a2](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/0.0.3a2) (2024-01-04)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/V0.0.2a1...V0.0.2a2)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/0.0.3a1...0.0.3a2)
 
-**Merged pull requests:**
+**Closed issues:**
 
-- Remove build files and add .gitignore [\#9](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/9) ([NeonDaniel](https://github.com/NeonDaniel))
-
-## [V0.0.2a1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/V0.0.2a1) (2023-06-14)
-
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/V0.0.1...V0.0.2a1)
+- Add PyPI Automation [\#3](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/issues/3)
 
 **Merged pull requests:**
 
-- Update messagebus package dependency [\#8](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/8) ([NeonDaniel](https://github.com/NeonDaniel))
+- Update logging, optimize, add more response messages [\#15](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/15) ([NeonDaniel](https://github.com/NeonDaniel))
+
+## [0.0.3a1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/0.0.3a1) (2023-09-11)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/0.0.2...0.0.3a1)
+
+**Closed issues:**
+
+-  Incompatability with latest ovos-dinkum-listener [\#13](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/issues/13)
+
+**Merged pull requests:**
+
+- Relax ovos-backend-client dependency version [\#14](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/14) ([Ramblurr](https://github.com/Ramblurr))
 
 
 
