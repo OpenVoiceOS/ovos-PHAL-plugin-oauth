@@ -6,14 +6,14 @@ import uuid
 import qrcode
 import requests
 from flask import Flask, request
-from ovos_bus_client.message import Message
 from oauthlib.oauth2 import WebApplicationClient
 from ovos_backend_client.database import (OAuthApplicationDatabase,
                                           OAuthTokenDatabase)
+from ovos_bus_client.message import Message
 from ovos_plugin_manager.phal import PHALPlugin
+from ovos_utils import classproperty
 from ovos_utils.log import LOG
 from ovos_utils.network_utils import get_ip
-from ovos_utils import classproperty
 from ovos_utils.process_utils import RuntimeRequirements
 
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
@@ -175,7 +175,6 @@ class OAuthPlugin(PHALPlugin):
                                    client_secret=client_secret,
                                    auth_endpoint=auth_endpoint,
                                    token_endpoint=token_endpoint,
-                                   refresh_endpoint=None,
                                    callback_endpoint=cb_endpoint,
                                    scope=scope,
                                    shell_integration=shell_display)
