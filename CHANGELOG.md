@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.4a1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/0.0.4a1) (2024-09-11)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/0.0.3a4...0.0.4a1)
+
+**Merged pull requests:**
+
+- refactor!:deprecate\_refresh\_endpoint [\#21](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/21) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.0.3a4](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/0.0.3a4) (2024-09-11)
 
 [Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/0.0.3a3...0.0.3a4)
