@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.3a4](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/0.0.3a4) (2024-09-11)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/0.0.3a3...0.0.3a4)
+
+**Merged pull requests:**
+
+- feat:semver\_automations [\#19](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/19) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.0.3a3](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/0.0.3a3) (2024-02-09)
 
 [Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/0.0.3a2...0.0.3a3)
