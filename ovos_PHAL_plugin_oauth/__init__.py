@@ -7,8 +7,7 @@ import qrcode
 import requests
 from flask import Flask, request
 from oauthlib.oauth2 import WebApplicationClient
-from ovos_backend_client.database import (OAuthApplicationDatabase,
-                                          OAuthTokenDatabase)
+from ovos_utils.oauth import OAuthApplicationDatabase, OAuthTokenDatabase
 from ovos_bus_client.message import Message
 from ovos_plugin_manager.phal import PHALPlugin
 from ovos_utils import classproperty
