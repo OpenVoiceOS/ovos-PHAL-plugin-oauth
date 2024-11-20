@@ -1,16 +1,16 @@
 # Changelog
 
-## [0.1.2a1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/0.1.2a1) (2024-11-06)
+## [0.1.3a1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/0.1.3a1) (2024-11-20)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/V0.1.1...0.1.2a1)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/V0.1.2...0.1.3a1)
 
 **Merged pull requests:**
 
-- fix: allow latest bus client version [\#26](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/26) ([JarbasAl](https://github.com/JarbasAl))
+- move oauth utils to ovos-utils and deprecate backend-client [\#28](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/28) ([JarbasAl](https://github.com/JarbasAl))
 
-## [V0.1.1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/V0.1.1) (2024-10-09)
+## [V0.1.2](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/V0.1.2) (2024-11-06)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/0.1.1...V0.1.1)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/0.1.2...V0.1.2)
 
 
 
