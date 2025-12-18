@@ -1,16 +1,16 @@
 # Changelog
 
-## [0.1.3a1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/0.1.3a1) (2024-11-20)
+## [0.1.4a1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/0.1.4a1) (2025-12-18)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/V0.1.2...0.1.3a1)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/V0.1.3...0.1.4a1)
 
 **Merged pull requests:**
 
-- move oauth utils to ovos-utils and deprecate backend-client [\#28](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/28) ([JarbasAl](https://github.com/JarbasAl))
+- chore: Configure Renovate [\#30](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/30) ([renovate[bot]](https://github.com/apps/renovate))
 
-## [V0.1.2](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/V0.1.2) (2024-11-06)
+## [V0.1.3](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/V0.1.3) (2024-11-20)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/0.1.2...V0.1.2)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/0.1.3...V0.1.3)
 
 
 
