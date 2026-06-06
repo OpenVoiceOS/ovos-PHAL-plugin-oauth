@@ -5,6 +5,4 @@ on:
 
 jobs:
   py_build_tests:
-    uses: neongeckocom/.github/.github/workflows/python_build_tests.yml@master
-    with:
-      python_version: "3.8"
+    uses: OpenVoiceOS/gh-automations/.github/workflows/build-tests.yml@dev
