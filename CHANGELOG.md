@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.5a1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/0.1.5a1) (2026-06-06)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/0.1.4a2...0.1.5a1)
+
+**Merged pull requests:**
+
+- fix\(deps\): allow ovos-bus-client 2.x \(widen cap to \<3.0.0\) [\#38](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/38) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.1.4a2](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/0.1.4a2) (2025-12-19)
 
 [Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/0.1.4a1...0.1.4a2)
