@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.6a2](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/0.1.6a2) (2026-06-16)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/0.1.6a1...0.1.6a2)
+
+**Merged pull requests:**
+
+- chore: add missing shared CI workflows [\#39](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/39) ([JarbasAl](https://github.com/JarbasAl))
+
+## [0.1.6a1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/0.1.6a1) (2026-06-06)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/0.1.5a1...0.1.6a1)
+
 ## [0.1.5a1](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/0.1.5a1) (2026-06-06)
 
 [Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/0.1.4a2...0.1.5a1)
