@@ -1,6 +1,12 @@
 # PHAL OAuth Plugin
 
-WIP
+This is a PHAL (hardware abstraction layer) plugin for OpenVoiceOS. It manages OAuth 2.0 authentication for skills. A skill registers an OAuth app with the plugin, and the plugin runs the OAuth flow and returns an access token.
+
+## Install
+
+```bash
+pip install ovos-PHAL-plugin-oauth
+```
 
 ## Bus API
 
@@ -34,9 +40,9 @@ self.bus.emit(message.forward(
     )
 ```
 
-## Registering OAuth app with the plugin
+## Registering an OAuth app with the plugin
 
-send OAuth info in `oauth.register`
+Send the OAuth info in `oauth.register`.
 
 ```python
 skill_id = message.data.get("skill_id")
@@ -56,12 +62,11 @@ client_id = message.data.get("client_id")
 client_secret = message.data.get("client_secret")
 ```
 
----------------------------------------
-## QR Code - Remote OAuth Integration Flow
+## QR code: remote OAuth integration flow
 
-* Note: This flow requires the a GUI to display the QR Code that can be scanned by the user using any external device. This also requires the port for the oauth app to be unblocked on the ufw.
+This flow needs a GUI to show the QR code, so the user can scan it with an external device. It also needs the OAuth app port open on the firewall (ufw).
 
-### **Example Usage From A Skill / Plugin**
+### Example usage from a skill or plugin
 
 ``` python
 self.skill_id = "my_skill_id"
@@ -115,3 +120,12 @@ def handle_token_response(self, message):
 self.register_skill()
 self.start_qr_flow()
 ```
+
+## Related projects
+
+- [OpenVoiceOS/ovos-PHAL](https://github.com/OpenVoiceOS/ovos-PHAL): the PHAL runtime that loads this plugin.
+- [OpenVoiceOS/ovos-plugin-manager](https://github.com/OpenVoiceOS/ovos-plugin-manager): the plugin manager that discovers PHAL plugins by entry point.
+
+## License
+
+Apache-2.0
