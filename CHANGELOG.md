@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.7a3](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/0.1.7a3) (2026-09-19)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/0.1.7a2...0.1.7a3)
+
+**Merged pull requests:**
+
+- Update dependency qrcode to v8 [\#37](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/pull/37) ([renovate[bot]](https://github.com/apps/renovate))
+
 ## [0.1.7a2](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/tree/0.1.7a2) (2026-07-31)
 
 [Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-oauth/compare/0.1.7a1...0.1.7a2)
